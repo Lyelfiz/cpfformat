@@ -6,7 +6,7 @@ global $CFG;
 if ($hassiteconfig) {
 
     // Create settings page - using simple strings to avoid language loading issues
-    $settings = new admin_settingpage('local_cpfformat', 'Formatação de CPF');
+    $settings = new admin_settingpage('local_cpfformat', get_string('pluginname', 'local_cpfformat'));
 
     if ($ADMIN->fulltree) {
         // Instructions

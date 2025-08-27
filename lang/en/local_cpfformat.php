@@ -24,7 +24,7 @@ $string['cpfplaceholder'] = 'CPF or E-mail';
 // Register Form Translation
 $string['cpfform'] = 'CPF';
 $string['cpfformmatch'] = 'CPF (again)';
-$string['selectacity'] = 'Selecione uma cidade...';
+$string['selectacity'] = 'Select a city...';
 $string['invalidcpf'] = 'CPF needs to be in the format: 000.000.000-00';
 $string['invalidcpfverify'] = 'Invalid CPF. Please check the numbers entered.';
 $string['thiscpfinuse'] = 'This CPF is already in use for another account.';
@@ -38,7 +38,7 @@ $string['descinstructions'] = 'For use:<br>1)Enable options below,<br>2) <strong
 $string['descinstructions'] .= ' You can access in ' . $enableselfregister . '.';
 
 $string['enabled_register'] = 'Enable CPF formatting on registration formulary';
-$string['enabled_desc'] = 'If enable, the field CPF is formatted for 000.000.000-00, and if exist one "User profile fields" called "CPF", will formatted this field too, and will comparing with the other field CPF.';
+$string['enabled_desc'] = 'If enable, the field CPF is formatted for 000.000.000-00, and will validate CPF, and if exist one "User profile fields" called "CPF", will formatted this field too, and will comparing with the other field CPF.';
 
 $string['inject_html_manual'] = 'Formatting CPF Login Page via manual HTML';
 $string['manual_js_code_desc'] = 'For active the formatted "CPF" in login screen, will need input the script below in: <strong>Additional HTML</strong> Of Moodle <strong>in field (Within HEAD)</strong>:<br>';

@@ -4,7 +4,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025082600;
+$plugin->version = 2025082700;
 $plugin->requires = 2024041900;
 $plugin->component = 'local_cpfformat';
 $plugin->release = '1.0';

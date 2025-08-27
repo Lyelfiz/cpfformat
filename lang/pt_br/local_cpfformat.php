@@ -39,7 +39,7 @@ $string['descinstructions'] = 'Para usar:<br>1) Habilite as opções abaixo<br>2
 $string['descinstructions'] .= ' Você pode acessar por aqui ' . $enableselfregister . '.';
 
 $string['enabled_register'] = 'Habilitar formatação de CPF no cadastro';
-$string['enabled_desc'] = 'Quando habilitado, o campo usuário no cadastro será formatado como CPF 000.000.000-00, e se existir um campo personalizado chamado "CPF", este campo também será formatado e fará comparação entre os dois campos.';
+$string['enabled_desc'] = 'Quando habilitado, o campo usuário no cadastro será formatado como CPF 000.000.000-00, e ainda fará uma validação do CPF, e se existir um campo personalizado chamado "CPF", este campo também será formatado e fará comparação entre os dois campos.';
 
 $string['inject_html_manual'] = 'Formatação de CPF Página de Login via HTML manual';
 $string['manual_js_code_desc'] = 'Para ativar a formatação de CPF na página de login, adicione o código abaixo no <strong>HTML adicional</strong> do Moodle <strong>no campo (Dentro da tag HEAD
