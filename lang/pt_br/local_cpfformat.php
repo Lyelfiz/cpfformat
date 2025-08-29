@@ -4,7 +4,7 @@
  * Language file.
  *
  * @package   local_cpfformat
- * @copyright 2025 Luiz Henrique Carvalho Vacilio - lh05447511@gmail.com
+ * @copyright 2025 Lyelfiz - LHCV - contact: https://github.com/Lyelfiz/cpfformat
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +35,7 @@ $string['thecpfnotmatch'] = 'Os CPF não são iguais.';
 
 // Settings for CPF format plugin
 $string['instructions'] = 'Instruções';
-$string['descinstructions'] = 'Para usar:<br>1) Habilite as opções abaixo<br>2) <strong>Configure Auto-cadastro para "Auto-cadastro por e-mail"</strong>';
+$string['descinstructions'] = 'Para usar, Habilite as opções abaixo<br>1) <strong>Configure Auto-cadastro para "Auto-cadastro por e-mail"</strong>';
 $string['descinstructions'] .= ' Você pode acessar por aqui ' . $enableselfregister . '.';
 
 $string['enabled_register'] = 'Habilitar formatação de CPF no cadastro';
@@ -46,3 +46,9 @@ $string['manual_js_code_desc'] = 'Para ativar a formatação de CPF na página d
 )</strong>:<br>';
 $string['manual_js_code_desc'] .= '<code>&lt;script src="' . $jsurl . '"&gt;&lt;/script&gt;</code><br>';
 $string['manual_js_code_desc'] .= 'Você pode acessar o HTML adicional em ' . $enableformatlogin . '.';
+
+$string['enabledcpfformatedlogin'] = 'Força o script no campo HTML adicional';
+$string['enabledcpfformatedlogin_desc'] = 'Se habilitado este campo, ele vai colocar o script descrito acima forçadamente no campo<strong> HTML adicional </strong>, para formatar somente o campo da página de login.<br><strong>AVISO! ao habilitar ele ira substituir qualquer código escrito no campo do HTML adicional, e ao desabilitar ele vai tirar o script automaticamente.</strong>';
+
+$string['development_info'] = 'Informações de Desenvolvimento';
+$string['development_info_desc'] = 'Desenvolvido por Lyelfiz - LHCV<br>Para updates e suporte, acesse ao repositório do GitHub: <a href="https://github.com/Lyelfiz/cpfformat" target="_blank">https://github.com/Lyelfiz/cpfformat</a>';

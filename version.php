@@ -1,11 +1,11 @@
 <?php
 
-// The plugin is developed by Luiz Henrique Carvalho Vacilio - contact: lh05447511@gmail.com
+// The plugin is developed by Lyelfiz - LHCV - contact: https://github.com/Lyelfiz/cpfformat
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025082700;
+$plugin->version = 2025082900;
 $plugin->requires = 2024041900;
 $plugin->component = 'local_cpfformat';
-$plugin->release = '1.0';
+$plugin->release = '2.0.0';
 $plugin->maturity = MATURITY_STABLE;
