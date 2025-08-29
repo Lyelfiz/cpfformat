@@ -1,6 +1,18 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
+/*
+// Old Hook to inject JS in the login page if enabled in settings
+function local_cpfformat_before_http_headers() {
+    global $PAGE;
+
+    //  Only add script if enabled in settings
+    if (get_config('local_cpfformat', 'enabledcpfformatedlogin')) {
+        $PAGE->requires->js(new moodle_url('/local/cpfformat/cpfmask.js.php'));
+    }
+}
+*/
+
 // Extend the signup form to include CPF formatting and Brazilian cities
 function local_cpfformat_extend_signup_form($mform)
 {
@@ -65,7 +77,6 @@ function local_cpfformat_extend_signup_form($mform)
         // Add custom JavaScript for CPF formatting
         $PAGE->requires->js_init_code(local_cpfformat_get_js());
     }
-
 
 }
 

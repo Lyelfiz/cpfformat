@@ -34,7 +34,7 @@ $string['thecpfnotmatch'] = 'The CPFs entered do not match.';
 
 // Settings for CPF format plugin
 $string['instructions'] = 'Instrutions';
-$string['descinstructions'] = 'For use:<br>1)Enable options below,<br>2) <strong>Config method Self Registration for "Email-based self-registration" </strong>';
+$string['descinstructions'] = 'For use, Enable options below,<br>1) <strong>Config method Self Registration for "Email-based self-registration" </strong>';
 $string['descinstructions'] .= ' You can access in ' . $enableselfregister . '.';
 
 $string['enabled_register'] = 'Enable CPF formatting on registration formulary';
@@ -44,3 +44,6 @@ $string['inject_html_manual'] = 'Formatting CPF Login Page via manual HTML';
 $string['manual_js_code_desc'] = 'For active the formatted "CPF" in login screen, will need input the script below in: <strong>Additional HTML</strong> Of Moodle <strong>in field (Within HEAD)</strong>:<br>';
 $string['manual_js_code_desc'] .= '<code>&lt;script src="' . $jsurl . '"&gt;&lt;/script&gt;</code><br>';
 $string['manual_js_code_desc'] .= 'You can access the field "Additional HTML" in ' . $enableformatlogin .'.';
+
+$string['enabledcpfformatedlogin'] = 'Force script code in Additional HTML field';
+$string['enabledcpfformatedlogin_desc'] = 'If enable, will set forced the script in HTML head in <strong>aditional HTML field</strong>, to format the CPF field in login page.<br><strong>WARNING: If you have other plugins that also add code to this field, it may cause conflicts. Use with caution.</strong>';
