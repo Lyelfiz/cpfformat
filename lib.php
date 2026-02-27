@@ -13,6 +13,17 @@ function local_cpfformat_before_http_headers() {
 }
 */
 
+function local_cpfformat_pre_user_signup($user) {
+
+    if (!empty($_POST['profile_field_cpf'])) {
+
+        $cpf = preg_replace('/\D/', '', $_POST['profile_field_cpf']);
+
+        // Define como username
+        $user->username = $cpf;
+    }
+}
+
 // Extend the signup form to include CPF formatting and Brazilian cities
 function local_cpfformat_extend_signup_form($mform)
 {
@@ -60,89 +71,165 @@ function local_cpfformat_extend_signup_form($mform)
     }
 
     // Add CPF field with formatting
-    if ($mform->elementExists('username')) {
-        $username_element = $mform->getElement('username');
+        $formatusername = get_config('local_cpfformat', 'formatusername');
+        if (!isset($formatusername) && isset($CFG->local_cpfformat_formatusername)) {
+            $formatusername = $CFG->local_cpfformat_formatusername;
+        }
+        $formatusername = !empty($formatusername);
+
+        // Username como CPF
+        if ($formatusername && $mform->elementExists('username')) {
+            $username = $mform->getElement('username');
+            $username->setLabel(get_string('cpfform', 'local_cpfformat'));
+            $username->updateAttributes([
+                'placeholder' => '000.000.000-00',
+                'maxlength'   => '14'
+            ]);
+        }
+
+        // Profile field CPF
         if ($mform->elementExists('profile_field_cpf')) {
-            $username_element->setLabel(get_string('cpfformmatch', 'local_cpfformat'));
+            $cpf = $mform->getElement('profile_field_cpf');
+            $cpf->updateAttributes([
+                'placeholder' => '000.000.000-00',
+                'maxlength'   => '14'
+            ]);
         }
-        else {
-            $username_element->setLabel(get_string('cpfform', 'local_cpfformat'));
+
+        // 🔥 JS UMA ÚNICA VEZ
+        $PAGE->requires->js_init_code(
+            local_cpfformat_get_js($formatusername)
+        );
+
+        $enabled = get_config('local_cpfformat', 'modifynamesurname');
+
+        if (empty($enabled)) {
+            return;
         }
-        $username_element->updateAttributes(array(
-            'placeholder' => '000.000.000-00',
-            'maxlength' => '14',
-            'id' => 'cpf-input'
-        ));
 
-        // Add custom JavaScript for CPF formatting
-        $PAGE->requires->js_init_code(local_cpfformat_get_js());
-    }
+        $PAGE->requires->js_init_code("
+            document.addEventListener('input', function(e) {
+                if (e.target.name === 'firstname' || e.target.name === 'lastname') {
+                    e.target.value = e.target.value.toUpperCase();
+                }
+            });
 
+            document.addEventListener('submit', function(e) {
+                const f = e.target.querySelector('input[name=\"firstname\"]');
+                const l = e.target.querySelector('input[name=\"lastname\"]');
+                if (f) f.value = f.value.toUpperCase();
+                if (l) l.value = l.value.toUpperCase();
+            });
+        ");
 }
 
 // Validate CPF format and uniqueness on signup
-function local_cpfformat_validate_extend_signup_form($data)
-{
+function local_cpfformat_validate_extend_signup_form($data) {
     global $CFG, $DB;
 
+    // Só valida cadastro por e-mail
     if (empty($CFG->registerauth) || $CFG->registerauth !== 'email') {
-        return array();
+        return [];
     }
 
+    // Plugin habilitado?
     $enabled = get_config('local_cpfformat', 'enabled');
     if (empty($enabled) && isset($CFG->local_cpfformat_enabled)) {
         $enabled = $CFG->local_cpfformat_enabled;
     }
     if (isset($CFG->local_cpfformat_enabled) && $CFG->local_cpfformat_enabled === false) {
-        return array();
+        return [];
     }
     if (empty($enabled)) {
-        return array();
+        return [];
     }
 
-    $errors = array();
+    // Flag: CPF no username?
+    $formatusername = get_config('local_cpfformat', 'formatusername');
+    if (!isset($formatusername) && isset($CFG->local_cpfformat_formatusername)) {
+        $formatusername = $CFG->local_cpfformat_formatusername;
+    }
+    $formatusername = !empty($formatusername);
 
-    // Validate CPF format and uniqueness
-    if (isset($data['username'])) {
-        if (!preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $data['username'])) {
+    $errors = [];
+
+    /*
+     * =========================================================
+     * MODO 1 — CPF NO USERNAME (comportamento antigo)
+     * =========================================================
+     */
+    if ($formatusername && !empty($data['username'])) {
+
+        $cpfraw = $data['username'];
+
+        if (!preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $cpfraw)) {
             $errors['username'] = get_string('invalidcpf', 'local_cpfformat');
-        } else {
-            $cpf = preg_replace('/\D/', '', $data['username']);
+            return $errors;
+        }
 
-            // Check if CPF is valid
-            if (!local_cpfformat_validate_cpf($cpf)) {
-                $errors['username'] = get_string('invalidcpfverify', 'local_cpfformat');
-            } else {
-                $cpf_formatado = $data['username'];
+        $cpf = preg_replace('/\D/', '', $cpfraw);
 
-                if (
-                    $DB->record_exists('user', array('username' => $cpf)) ||
-                    $DB->record_exists('user', array('username' => $cpf_formatado))
-                ) {
-                    $errors['username'] = get_string('thiscpfinuse', 'local_cpfformat');
-                }
+        if (!local_cpfformat_validate_cpf($cpf)) {
+            $errors['username'] = get_string('invalidcpfverify', 'local_cpfformat');
+            return $errors;
+        }
 
-                $sql = "SELECT u.id FROM {user} u 
-                        JOIN {user_info_data} uid ON uid.userid = u.id 
-                        JOIN {user_info_field} uif ON uif.id = uid.fieldid 
-                        WHERE uif.shortname = 'cpf' 
-                        AND (uid.data = ? OR uid.data = ?) 
-                        AND u.deleted = 0";
+        // CPF já usado como username
+        if (
+            $DB->record_exists('user', ['username' => $cpf]) ||
+            $DB->record_exists('user', ['username' => $cpfraw])
+        ) {
+            $errors['username'] = get_string('thiscpfinuse', 'local_cpfformat');
+            return $errors;
+        }
 
-                if ($DB->record_exists_sql($sql, array($cpf, $cpf_formatado))) {
-                    $errors['username'] = get_string('thiscpfisregistred', 'local_cpfformat');
-                }
-            }
+        // CPF já usado em campo de perfil
+        $sql = "SELECT 1
+                  FROM {user} u
+                  JOIN {user_info_data} uid ON uid.userid = u.id
+                  JOIN {user_info_field} uif ON uif.id = uid.fieldid
+                 WHERE uif.shortname = 'cpf'
+                   AND (uid.data = ? OR uid.data = ?)
+                   AND u.deleted = 0";
 
-            // Validate profile field CPF if exists
-            if (!empty($data['profile_field_cpf'])) {
-                if (!preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $data['profile_field_cpf'])) {
-                    $errors['profile_field_cpf'] = get_string('thiscpfisneedinformatted', 'local_cpfformat');
-                } else if ($data['username'] !== $data['profile_field_cpf']) {
-                    $errors['username'] = get_string('thecpfnotmatch', 'local_cpfformat');
-                    $errors['profile_field_cpf'] = get_string('thecpfnotmatch', 'local_cpfformat');
-                }
-            }
+        if ($DB->record_exists_sql($sql, [$cpf, $cpfraw])) {
+            $errors['username'] = get_string('thiscpfisregistred', 'local_cpfformat');
+        }
+    }
+
+    /*
+     * =========================================================
+     * MODO 2 — CPF SOMENTE NO profile_field_cpf
+     * =========================================================
+     */
+    if (!$formatusername && !empty($data['profile_field_cpf'])) {
+
+        $cpfraw = $data['profile_field_cpf'];
+
+        if (!preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $cpfraw)) {
+            $errors['profile_field_cpf'] =
+                get_string('thiscpfisneedinformatted', 'local_cpfformat');
+            return $errors;
+        }
+
+        $cpf = preg_replace('/\D/', '', $cpfraw);
+
+        if (!local_cpfformat_validate_cpf($cpf)) {
+            $errors['profile_field_cpf'] =
+                get_string('invalidcpfverify', 'local_cpfformat');
+            return $errors;
+        }
+
+        // CPF já usado no campo de perfil
+        $sql = "SELECT 1
+                  FROM {user_info_data} uid
+                  JOIN {user_info_field} uif ON uif.id = uid.fieldid
+                 WHERE uif.shortname = 'cpf'
+                   AND (uid.data = ? OR uid.data = ?)";
+
+        if ($DB->record_exists_sql($sql, [$cpf, $cpfraw])) {
+            $errors['profile_field_cpf'] =
+                get_string('thiscpfisregistred', 'local_cpfformat');
         }
     }
 
@@ -253,133 +340,49 @@ function get_brazilian_cities_from_api()
 
 // Get JavaScript code for CPF formatting
 // This function returns a string containing the JavaScript code that formats CPF input fields.
-function local_cpfformat_get_js()
-{
+function local_cpfformat_get_js($formatusername = false) {
+    $formatusername = $formatusername ? 'true' : 'false';
+
     return "
     require(['jquery'], function($) {
-        $(document).ready(function() {
-            setTimeout(function() {
-                reorderFormFields();
-            }, 100);
 
-            $('input[name=\"profile_field_cpf\"]').attr('placeholder', '000.000.000-00');
+        function formatCPF(value) {
+            value = value.replace(/\\D/g, '').substring(0, 11);
 
-            function reorderFormFields() {
-                var form = $('#mform1, form[data-form-id=\"signup\"], .mform');
-                if (form.length === 0) {
-                    form = $('form').first();
-                }
-
-                if (form.length > 0) {
-                    var nameFields = form.find('input[name=\"firstname\"], input[name=\"lastname\"]').closest('.fitem');
-                    var emailField = form.find('input[name=\"email\"]').closest('.fitem');
-                    var email2Field = form.find('input[name=\"email2\"]').closest('.fitem');
-                    var passwordField = form.find('input[name=\"password\"]').closest('.fitem');
-                    var passwordInfo = form.find('.fitem').has('*[id*=\"passwordpolicy\"]');
-                    var countryField = form.find('select[name=\"country\"]').closest('.fitem');
-                    var cityField = form.find('input[name=\"city\"], select[name=\"city\"]').closest('.fitem');
-                    var usernameField = form.find('input[name=\"username\"]').closest('.fitem');
-                    var profileFields = form.find('.fitem').has('*[name*=\"profile_field_\"]');
-                    var captchaField = form.find('.fitem').has('*[name*=\"recaptcha\"]');
-                    var submitButtons = form.find('.fitem_actionbuttons, .fitem').has('input[type=\"submit\"]');
-
-                    var orderedFields = [];
-                    nameFields.each(function() { orderedFields.push($(this)); });
-                    if (emailField.length) orderedFields.push(emailField);
-                    if (email2Field.length) orderedFields.push(email2Field);
-                    if (passwordInfo.length) orderedFields.push(passwordInfo);
-                    if (passwordField.length) orderedFields.push(passwordField);
-                    if (countryField.length) orderedFields.push(countryField);
-                    if (cityField.length) orderedFields.push(cityField);
-                    profileFields.each(function() { orderedFields.push($(this)); });
-                    if (usernameField.length) orderedFields.push(usernameField);
-                    if (captchaField.length) orderedFields.push(captchaField);
-                    if (submitButtons.length) orderedFields.push(submitButtons);
-
-                    var container = form.find('.fcontainer, fieldset').first();
-                    if (container.length === 0) {
-                        container = form;
-                    }
-
-                    $.each(orderedFields, function(index, field) {
-                        if (field && field.length) {
-                            container.append(field);
-                        }
-                    });
-                }
+            if (value.length <= 3) {
+                return value;
+            } else if (value.length <= 6) {
+                return value.replace(/(\\d{3})(\\d+)/, '\$1.\$2');
+            } else if (value.length <= 9) {
+                return value.replace(/(\\d{3})(\\d{3})(\\d+)/, '\$1.\$2.\$3');
+            } else {
+                return value.replace(/(\\d{3})(\\d{3})(\\d{3})(\\d+)/, '\$1.\$2.\$3-\$4');
             }
+        }
 
-            function formatCPF(value) {
-                value = value.replace(/\D/g, '');
-                value = value.substring(0, 11);
-
-                if (value.length <= 3) {
-                    return value;
-                } else if (value.length <= 6) {
-                    return value.replace(/(\d{3})(\d+)/, '\$1.\$2');
-                } else if (value.length <= 9) {
-                    return value.replace(/(\d{3})(\d{3})(\d+)/, '\$1.\$2.\$3');
-                } else {
-                    return value.replace(/(\d{3})(\d{3})(\d{3})(\d+)/, '\$1.\$2.\$3-\$4');
-                }
-            }
-
-            function getNewCursorPosition(oldValue, newValue, oldCursorPos) {
-                var oldSpecialChars = (oldValue.substring(0, oldCursorPos).match(/[.-]/g) || []).length;
-                var newSpecialChars = (newValue.substring(0, oldCursorPos + (newValue.length - oldValue.length)).match(/[.-]/g) || []).length;
-                var newPos = oldCursorPos + (newSpecialChars - oldSpecialChars);
-                return Math.min(newPos, newValue.length);
-            }
-
-            function applyFormatting(element) {
-                var cursorPos = element.selectionStart;
-                var oldValue = element.value;
-                var newValue = formatCPF(oldValue);
-
-                if (oldValue !== newValue) {
-                    element.value = newValue;
-                    var newCursorPos = getNewCursorPosition(oldValue, newValue, cursorPos);
-                    setTimeout(function() {
-                        element.setSelectionRange(newCursorPos, newCursorPos);
-                    }, 0);
-                }
-            }
-
-            $('#cpf-input, input[name=\"username\"]').on('input', function() {
-                applyFormatting(this);
-            });
-
-            $('input[name=\"profile_field_cpf\"]').on('input', function() {
-                applyFormatting(this);
-            });
-
-            $('#cpf-input, input[name=\"username\"], input[name=\"profile_field_cpf\"]').on('keydown', function(e) {
-                if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
-                    (e.keyCode === 65 && e.ctrlKey === true) ||
-                    (e.keyCode === 67 && e.ctrlKey === true) ||
-                    (e.keyCode === 86 && e.ctrlKey === true) ||
-                    (e.keyCode === 88 && e.ctrlKey === true) ||
-                    (e.keyCode >= 35 && e.keyCode <= 40)) {
-                    return;
-                }
-
-                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-                    e.preventDefault();
-                }
-
-                var currentDigits = this.value.replace(/\D/g, '');
-                if (currentDigits.length >= 11 && [8, 9, 27, 13, 46].indexOf(e.keyCode) === -1) {
-                    e.preventDefault();
+        function bindCPF(selector) {
+            $(document).on('input', selector, function() {
+                var newValue = formatCPF(this.value);
+                if (this.value !== newValue) {
+                    this.value = newValue;
                 }
             });
 
-            $('#cpf-input, input[name=\"username\"], input[name=\"profile_field_cpf\"]').on('paste', function(e) {
-                var element = this;
-                setTimeout(function() {
-                    applyFormatting(element);
-                }, 0);
+            $(document).on('focus', selector, function() {
+                $(this)
+                    .attr('placeholder', '000.000.000-00')
+                    .attr('maxlength', '14');
             });
-        });
+        }
+
+        // Sempre formata o profile_field_cpf
+        bindCPF('input[name=\"profile_field_cpf\"]');
+
+        // Só formata username se habilitado
+        if ($formatusername) {
+            bindCPF('input[name=\"username\"]');
+        }
+
     });
     ";
 }

@@ -24,6 +24,21 @@ if ($hassiteconfig) {
             0 // Default disabled
         ));
 
+        $settings->add(new admin_setting_configcheckbox(
+            'local_cpfformat/formatusername',
+            'Usar CPF como usuário',
+            'Se marcado, o CPF será formatado e validado no campo usuário (username). 
+            Se desmarcado, o CPF será usado apenas no campo profile_field_cpf.',
+            0 // Default value
+        ));
+
+        $settings->add(new admin_setting_configcheckbox(
+            'local_cpfformat/modifynamesurname',
+            'Forçar nome e sobrenome em maiúsculo',
+            'Se marcado o campo nome e sobrenome será maiúsculo.',
+            0 // Default value
+        ));
+
         // Enable manual HTML injection setting
         $settings->add(new admin_setting_heading(
             'local_cpfformat/inject_html_manual',
