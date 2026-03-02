@@ -19,7 +19,7 @@ $enableformatlogin = '<a href="' . $CFG->wwwroot . '/admin/settings.php?section=
 $string['pluginname'] = 'Formatting CPF Login/Register';
 
 // Login Form Translation
-$string['cpfplaceholder'] = 'CPF or E-mail';
+$string['cpfplaceholder'] = 'CPF, Username or E-mail';
 
 // Register Form Translation
 $string['cpfform'] = 'CPF';
