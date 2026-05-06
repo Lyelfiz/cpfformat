@@ -26,16 +26,15 @@ if ($hassiteconfig) {
 
         $settings->add(new admin_setting_configcheckbox(
             'local_cpfformat/formatusername',
-            'Usar CPF como usuário',
-            'Se marcado, o CPF será formatado e validado no campo usuário (username). 
-            Se desmarcado, o CPF será usado apenas no campo profile_field_cpf.',
+            get_string('formatusername', 'local_cpfformat'),
+            get_string('formatusername_desc', 'local_cpfformat'),
             0 // Default value
         ));
 
         $settings->add(new admin_setting_configcheckbox(
             'local_cpfformat/modifynamesurname',
-            'Forçar nome e sobrenome em maiúsculo',
-            'Se marcado o campo nome e sobrenome será maiúsculo.',
+            get_string('modifynamesurname', 'local_cpfformat'),
+            get_string('modifynamesurname_desc', 'local_cpfformat'),
             0 // Default value
         ));
 
@@ -56,10 +55,12 @@ if ($hassiteconfig) {
     }
 
         // Development info
+        $plugininfo = core_plugin_manager::instance()->get_plugin_info('local_cpfformat');
+
         $settings->add(new admin_setting_heading(
             'local_cpfformat/development_info',
             get_string('development_info', 'local_cpfformat'),
-            get_string('development_info_desc', 'local_cpfformat'),
+            get_string('development_info_desc', 'local_cpfformat') . '<br><strong>' . get_string('development_info_version', 'local_cpfformat') . $plugininfo->release . '</strong>'
         ));
 
     $ADMIN->add('localplugins', $settings);

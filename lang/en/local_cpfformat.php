@@ -40,6 +40,12 @@ $string['descinstructions'] .= ' You can access in ' . $enableselfregister . '.'
 $string['enabled_register'] = 'Enable CPF formatting on registration formulary';
 $string['enabled_desc'] = 'If enable, the field CPF is formatted for 000.000.000-00, and will validate CPF, and if exist one "User profile fields" called "CPF", will formatted this field too, and will comparing with the other field CPF.';
 
+$string['formatusername'] = 'Use CPF as username';
+$string['formatusername_desc'] = 'If enabled, the CPF will be formatted and validated in the username field. If disabled, the CPF will only be used in the profile_field_cpf field.';
+
+$string['modifynamesurname'] = 'Force uppercase name and surname';
+$string['modifynamesurname_desc'] = 'If enabled, the name and surname fields will be converted to uppercase.';
+
 $string['inject_html_manual'] = 'Formatting CPF Login Page via manual HTML';
 $string['manual_js_code_desc'] = 'For active the formatted "CPF" in login screen, will need input the script below in: <strong>Additional HTML</strong> Of Moodle <strong>in field (Within HEAD)</strong>:<br>';
 $string['manual_js_code_desc'] .= '<code>&lt;script src="' . $jsurl . '"&gt;&lt;/script&gt;</code><br>';
@@ -50,3 +56,4 @@ $string['enabledcpfformatedlogin_desc'] = 'If enable, will set forced the script
 
 $string['development_info'] = 'Development Info';
 $string['development_info_desc'] = 'Developed by Lyelfiz - LHCV<br>For updates and support, visit the GitHub repository: <a href="https://github.com/Lyelfiz/cpfformat" target="_blank">https://github.com/Lyelfiz/cpfformat</a>';
+$string['development_info_version'] = 'Version: ';

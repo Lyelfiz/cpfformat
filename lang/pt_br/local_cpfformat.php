@@ -41,6 +41,12 @@ $string['descinstructions'] .= ' Você pode acessar por aqui ' . $enableselfregi
 $string['enabled_register'] = 'Habilitar formatação de CPF no cadastro';
 $string['enabled_desc'] = 'Quando habilitado, o campo usuário no cadastro será formatado como CPF 000.000.000-00, e ainda fará uma validação do CPF, e se existir um campo personalizado chamado "CPF", este campo também será formatado e fará comparação entre os dois campos.';
 
+$string['formatusername'] = 'Usar CPF como usuário';
+$string['formatusername_desc'] = 'Se marcado, o CPF será formatado e validado no campo usuário (username). Se desmarcado, o CPF será usado apenas no campo profile_field_cpf.';
+
+$string['modifynamesurname'] = 'Forçar nome e sobrenome em maiúsculo';
+$string['modifynamesurname_desc'] = 'Se marcado, o nome e sobrenome serão convertidos para maiúsculo.';
+
 $string['inject_html_manual'] = 'Formatação de CPF Página de Login via HTML manual';
 $string['manual_js_code_desc'] = 'Para ativar a formatação de CPF na página de login, adicione o código abaixo no <strong>HTML adicional</strong> do Moodle <strong>no campo (Dentro da tag HEAD
 )</strong>:<br>';
@@ -52,3 +58,4 @@ $string['enabledcpfformatedlogin_desc'] = 'Se habilitado este campo, ele vai col
 
 $string['development_info'] = 'Informações de Desenvolvimento';
 $string['development_info_desc'] = 'Desenvolvido por Lyelfiz - LHCV<br>Para updates e suporte, acesse ao repositório do GitHub: <a href="https://github.com/Lyelfiz/cpfformat" target="_blank">https://github.com/Lyelfiz/cpfformat</a>';
+$string['development_info_version'] = 'Versão: ';
