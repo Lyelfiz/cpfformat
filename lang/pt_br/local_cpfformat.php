@@ -57,5 +57,5 @@ $string['enabledcpfformatedlogin'] = 'Força o script no campo HTML adicional';
 $string['enabledcpfformatedlogin_desc'] = 'Se habilitado este campo, ele vai colocar o script descrito acima forçadamente no campo<strong> HTML adicional </strong>, para formatar somente o campo da página de login.<br><strong>AVISO! ao habilitar ele ira substituir qualquer código escrito no campo do HTML adicional, e ao desabilitar ele vai tirar o script automaticamente.</strong>';
 
 $string['development_info'] = 'Informações de Desenvolvimento';
-$string['development_info_desc'] = 'Desenvolvido por Lyelfiz - LHCV<br>Para updates e suporte, acesse ao repositório do GitHub: <a href="https://github.com/Lyelfiz/cpfformat" target="_blank">https://github.com/Lyelfiz/cpfformat</a>';
+$string['development_info_desc'] = 'Desenvolvido por Lyelfiz - Luiz Henrique Carvalho Vacilio<br>Para updates e suporte, acesse ao repositório do GitHub: <a href="https://github.com/Lyelfiz/cpfformat" target="_blank">https://github.com/Lyelfiz/cpfformat</a>';
 $string['development_info_version'] = 'Versão: ';

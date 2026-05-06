@@ -55,5 +55,5 @@ $string['enabledcpfformatedlogin'] = 'Force script code in Additional HTML field
 $string['enabledcpfformatedlogin_desc'] = 'If enable, will set forced the script in HTML head in <strong>aditional HTML field</strong>, to format the CPF field in login page.<br><strong>WARNING: If you have other plugins that also add code to this field, it may cause conflicts. Use with caution.</strong>';
 
 $string['development_info'] = 'Development Info';
-$string['development_info_desc'] = 'Developed by Lyelfiz - LHCV<br>For updates and support, visit the GitHub repository: <a href="https://github.com/Lyelfiz/cpfformat" target="_blank">https://github.com/Lyelfiz/cpfformat</a>';
+$string['development_info_desc'] = 'Developed by Lyelfiz - Luiz Henrique Carvalho Vacilio<br>For updates and support, visit the GitHub repository: <a href="https://github.com/Lyelfiz/cpfformat" target="_blank">https://github.com/Lyelfiz/cpfformat</a>';
 $string['development_info_version'] = 'Version: ';

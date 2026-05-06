@@ -1,8 +1,8 @@
-# cpfformat
-local_cpfformat is plugin of moodle - Dev: Lyelfiz - LHCV
-=======================================
+# CPF Format Plugin for Moodle
 
-IMPORTANT NOTE: This plugin is under development. Use at your own risk!
+**Developer:** Lyelfiz - Luiz Henrique Carvalho Vacilio
+
+> **IMPORTANT NOTE:** This plugin is under development. Use at your own risk!
 
 [![Releases](https://img.shields.io/github/release/Lyelfiz/cpfformat.svg?style=flat-square)](https://github.com/Lyelfiz/cpfformat/releases)
 ![PHP](https://img.shields.io/badge/PHP-v7.0%20to%20v8.2-blue.svg)
@@ -11,25 +11,46 @@ IMPORTANT NOTE: This plugin is under development. Use at your own risk!
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-green.svg)](#contributing)
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](#license)
 
-# What is that plugin
+## Description
 
-This plugin is CPF formatting and validation for creation/login of accounts in Moodle,
-if enable this plugin will formatting CPF in format 00000000000 for 000.000.000-00,
-and will mandatory put CPF in creation of account.
+This Moodle plugin provides CPF (Cadastro de Pessoas Físicas - Brazilian Tax ID) formatting and validation for user account creation and login. When enabled, it formats CPF inputs from `00000000000` to `000.000.000-00` and makes CPF mandatory during account registration.
 
-# Plugin requirement
+## Requirements
 
-<strong>Moodle version:</strong> 4.4.9+
-<br>Need in Moodle <strong>"Self registratin"</strong> active in <strong>"Email-based self-registration"</strong>
+- **Moodle Version:** 4.4.9 or higher
+- **PHP Version:** 7.0 to 8.2
+- **Moodle Feature:** "Self Registration" must be enabled with "Email-based self-registration" active.
 
-# Intall Plugin
-For install this plugin, you need download this plugin in .zip and put in
-<br><strong>"Administration -> Plugins -> Install plugins"</strong><br>
-after that put plugin.zip in Install plugin from ZIP file, example below in the image...
+## Installation
 
-<img src="pix/installplugin.PNG">
+1. Download the plugin as a ZIP file from the [releases page](https://github.com/Lyelfiz/cpfformat/releases).
+2. Go to **Site Administration > Plugins > Install plugins**.
+3. Upload the ZIP file and follow the installation prompts.
 
-# Enable Plugin
-After install, you need enable de plugin, for that you can enable following the instruction in image below...
+![Install Plugin](pix/installplugin.PNG)
 
-<img src="pix/pluginmenu.PNG">
+## Enabling the Plugin
+
+After installation, enable the plugin:
+
+1. Navigate to **Site Administration > Plugins > Local plugins**.
+2. Find "CPF Format" and click "Enable".
+
+![Enable Plugin](pix/pluginmenu.PNG)
+
+## Usage
+
+Once enabled, the plugin will:
+- Format CPF inputs in the user registration form.
+- Validate CPF during account creation.
+- Require CPF as a mandatory field for new accounts.
+
+## Contributing
+
+Contributions are welcome! Please:
+- Report issues on [GitHub Issues](https://github.com/Lyelfiz/cpfformat/issues).
+- Submit pull requests for improvements.
+
+## License
+
+This plugin is licensed under the GPL v3 License. See the LICENSE file for details.
