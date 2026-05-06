@@ -1,0 +1,8 @@
+{
+    "files": [
+        "amd/src/local_cpfformat_cities.js"
+    ],
+    "maps": {
+        "local_cpfformat/local_cpfformat_cities": "local_cpfformat_cities"
+    }
+}

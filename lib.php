@@ -55,17 +55,25 @@ function local_cpfformat_extend_signup_form($mform)
     if ($mform->elementExists('city')) {
         $mform->removeElement('city');
 
-        // add city field with Brazilian cities autocomplete
+        // Get Brazilian cities for autocomplete
         $cities = get_brazilian_cities();
+
+        // Convert to associative array for Moodle autocomplete
+        $city_options = [];
+        foreach ($cities as $city) {
+            $city_options[$city] = $city;
+        }
+
+        // add city field with Brazilian cities autocomplete
         $mform->addElement(
             'autocomplete',
             'city',
             get_string('city'),
-            $cities,
-            array(
-                'noselectionstring' => get_string('selectacity', 'local_cpfformat'),
-                'allowclear' => true
-            )
+            $city_options,
+            [
+                'multiple' => false,
+                'noselectionstring' => get_string('choosedots'),
+            ]
         );
         $mform->addRule('city', get_string('required'), 'required', null, 'client');
     }
@@ -276,37 +284,55 @@ function local_cpfformat_validate_cpf($cpf)
     return true;
 }
 
+// Normalize string for better autocomplete matching
+function normalize_string($string) {
+    $string = mb_strtolower($string, 'UTF-8');
+    $string = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $string);
+
+    return preg_replace('/[^a-z0-9]/', '', $string);
+}
+
 // Get Brazilian cities from local file or API IBGE
-function get_brazilian_cities()
-{
-    global $CFG;
+function get_brazilian_cities() {
+    static $cache = null;
 
-    $possible_paths = [
-        __DIR__ . '/municipios.json',
-    ];
-
-    $json_file_path = null;
-    foreach ($possible_paths as $path) {
-        if (file_exists($path)) {
-            $json_file_path = $path;
-            break;
-        }
+    if ($cache !== null) {
+        return $cache;
     }
 
-    if ($json_file_path) {
-        $cities = file_get_contents($json_file_path);
-        $cities_array = json_decode($cities, true);
-        $city_names = array_column($cities_array, 'nome');
-        sort($city_names);
+    $jsonpath = __DIR__ . '/municipios.json';
 
-        $sorted_cities = array('' => '');
-        foreach ($city_names as $name) {
-            $sorted_cities[$name] = $name;
-        }
-        return $sorted_cities;
+    if (!file_exists($jsonpath)) {
+        // Try to fetch from API if local file doesn't exist
+        $cache = get_brazilian_cities_from_api();
     } else {
-        return get_brazilian_cities_from_api();
+        $json = file_get_contents($jsonpath);
+        $cities = json_decode($json, true);
+
+        // Check if it's an array of strings (new format) or objects (old format)
+        if (is_array($cities) && count($cities) > 0) {
+            if (is_string($cities[0])) {
+                // New format: already an array of city names
+                sort($cities);
+                $cache = $cities;
+            } else {
+                // Old format: array of objects with 'nome' property
+                $cityList = [];
+                foreach ($cities as $city) {
+                    if (isset($city['nome'])) {
+                        $cityList[] = $city['nome'];
+                    }
+                }
+                sort($cityList);
+                $cache = $cityList;
+            }
+        } else {
+            // Fallback if JSON is invalid
+            $cache = [];
+        }
     }
+
+    return $cache;
 }
 
 // Fetch Brazilian cities from IBGE API if local file is not available
@@ -321,20 +347,16 @@ function get_brazilian_cities_from_api()
         $city_names = array_column($cities_array, 'nome');
         sort($city_names);
 
-        $sorted_cities = array('' => '');
-        foreach ($city_names as $name) {
-            $sorted_cities[$name] = $name;
-        }
-        return $sorted_cities;
+        return $city_names;
     } else {
-        return array(
-            '' => '',
-            'São Paulo' => 'São Paulo',
-            'Rio de Janeiro' => 'Rio de Janeiro',
-            'Brasília' => 'Brasília',
-            'Salvador' => 'Salvador',
-            'Fortaleza' => 'Fortaleza'
-        );
+        // Fallback with some major Brazilian cities
+        return [
+            'São Paulo',
+            'Rio de Janeiro',
+            'Brasília',
+            'Salvador',
+            'Fortaleza'
+        ];
     }
 }
 
